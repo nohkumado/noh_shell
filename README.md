@@ -1,3 +1,4 @@
-A sample command-line application with an entrypoint in `bin/`, library code
-in `lib/`, and example unit test in `test/`.
-# noh_shell
+# Noh’s shell
+
+a try to create a simple shell to be included to give command line porograms
+some interactivity
