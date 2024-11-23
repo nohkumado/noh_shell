@@ -35,4 +35,8 @@ class Cd extends Command {
       return ProcessResult(0, 1, '', 'Error changing directory');
     }
   }
+  @override
+  Cd copy({List<String>? arguments}) {
+    return Cd(name: name, arguments: arguments ?? this.arguments);
+  }
 }

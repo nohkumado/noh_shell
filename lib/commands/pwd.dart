@@ -15,4 +15,8 @@ class Pwd extends Command {
     output?.write('$currentDirectory\n');
     return ProcessResult(0, 0, currentDirectory, '');
   }
+  @override
+  Pwd copy({List<String>? arguments}) {
+    return Pwd(name: name, arguments: arguments ?? this.arguments);
+  }
 }

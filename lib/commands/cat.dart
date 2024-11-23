@@ -33,4 +33,8 @@ class Cat extends Command {
       return ProcessResult(0, 1, '', errorMessage);
     }
   }
+  @override
+  Cat copy({List<String>? arguments}) {
+    return Cat(name: name, arguments: arguments ?? this.arguments);
+  }
 }

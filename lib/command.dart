@@ -20,5 +20,9 @@ class Command {
       stderrEncoding: null,
     );
   }
+
+  Command copy({List<String>? arguments}) {
+    return Command(name: this.name, arguments: arguments ?? this.arguments);
+  }
 }
 

@@ -21,11 +21,11 @@ class Ls extends Command
 
   // Create a Directory object
   final directory = Directory(directoryPath);
-  if(debug) print("LS created dirpath: $directoryPath");
+  if(debug) print("LS created dir-path: $directoryPath");
 
   // Check if the directory exists
   if (await directory.exists()) {
-    if(debug) print("LS dir esists ");
+    if(debug) print("LS dir exists ");
     // List all files and directories in the specified path
     List<FileSystemEntity> entities = directory.listSync();
     if(debug) print("LS dir content: $entities");
@@ -46,5 +46,9 @@ class Ls extends Command
     error?.writeln(errorMessage);
     return ProcessResult(0, 1, '', errorMessage);
   }
+ }
+ @override
+  Ls copy({List<String>? arguments}) {
+   return Ls(name: name, arguments: arguments ?? this.arguments);
  }
 }
