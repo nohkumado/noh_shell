@@ -2,7 +2,7 @@ import 'dart:io';
 import '../command.dart';
 
 class Cat extends Command {
-  Cat({super.name = "cat", required super.arguments});
+  Cat({super.name = "cat", required super.arguments, super.env});
 
   @override
   Future<ProcessResult> execute({
@@ -34,7 +34,7 @@ class Cat extends Command {
     }
   }
   @override
-  Cat copy({List<String>? arguments}) {
-    return Cat(name: name, arguments: arguments ?? this.arguments);
+  Cat copy({List<String>? arguments, Map<String, String>? env}) {
+    return Cat(name: name, arguments: arguments ?? this.arguments, env: env?? this.env);
   }
 }

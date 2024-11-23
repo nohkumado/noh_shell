@@ -4,7 +4,7 @@ import '../command.dart';
 
 class Ls extends Command
 {
- Ls({super.name = "ls", required super.arguments});
+ Ls({super.name = "ls", required super.arguments, super.env});
 
  @override
  Future<ProcessResult> execute(
@@ -48,7 +48,7 @@ class Ls extends Command
   }
  }
  @override
-  Ls copy({List<String>? arguments}) {
-   return Ls(name: name, arguments: arguments ?? this.arguments);
+  Ls copy({List<String>? arguments, Map<String, String>? env}) {
+   return Ls(name: name, arguments: arguments ?? this.arguments, env: env?? this.env);
  }
 }

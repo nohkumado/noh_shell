@@ -2,7 +2,7 @@ import 'dart:io';
 import '../command.dart';
 
 class Cd extends Command {
-  Cd({super.name = "cd", required super.arguments});
+  Cd({super.name = "cd", required super.arguments, super.env});
 
   @override
   Future<ProcessResult> execute({
@@ -13,7 +13,7 @@ class Cd extends Command {
   }) async {
     // If no arguments provided, return to home directory
     String targetPath = arguments.isEmpty
-        ? Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'] ?? '.'
+        ? env['PWD'] ??env['HOME'] ??Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'] ?? '.'
         : arguments[0];
 
     try {
@@ -29,6 +29,7 @@ class Cd extends Command {
       Directory.current = targetDirectory;
 
       output?.write('${targetDirectory.path}\n');
+      env['PWD'] = targetDirectory.path;
       return ProcessResult(0, 0, targetDirectory.path, '');
     } catch (e) {
       error?.writeln('cd: Error changing directory: $e');
@@ -36,7 +37,7 @@ class Cd extends Command {
     }
   }
   @override
-  Cd copy({List<String>? arguments}) {
-    return Cd(name: name, arguments: arguments ?? this.arguments);
+  Cd copy({List<String>? arguments, Map<String, String>? env}) {
+    return Cd(name: name, arguments: arguments ?? this.arguments, env: env?? this.env);
   }
 }
