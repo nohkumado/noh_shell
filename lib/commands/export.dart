@@ -1,9 +1,10 @@
 import 'dart:io';
 
 import '../command.dart';
+import '../shell_env.dart';
 
 class Export extends Command {
-  Export({super.name = "export", required super.arguments, super.env});
+  Export({super.name = "export", required super.arguments, required super.env});
 
   @override
   Future<ProcessResult> execute({
@@ -17,11 +18,9 @@ class Export extends Command {
     if (arguments.isEmpty) {
       if(debug) print("noargs rpinting out env");
       // If no arguments, print all environment variables
-      env.forEach((key, value) {
-        String line = '$key=$value\n';
+        String line = '$env\n';
         output?.writeln(line);
         resultOutput.write(line);
-      });
       if(debug) print("output set to $output");
       return ProcessResult(0, 0, resultOutput.toString(), '');
     }
@@ -47,7 +46,7 @@ class Export extends Command {
   }
 
   @override
-  Export copy({List<String>? arguments, Map<String, String>? env}) {
+  Export copy({List<String>? arguments, ShellEnv? env}) {
     return Export(arguments: arguments ?? this.arguments, env: env?? this.env);
   }
 }

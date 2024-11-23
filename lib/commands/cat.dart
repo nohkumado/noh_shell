@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:noh_shell/shell_env.dart';
+
 import '../command.dart';
 
 class Cat extends Command {
-  Cat({super.name = "cat", required super.arguments, super.env});
+  Cat({super.name = "cat", required super.arguments, required super.env});
 
   @override
   Future<ProcessResult> execute({
@@ -34,7 +36,7 @@ class Cat extends Command {
     }
   }
   @override
-  Cat copy({List<String>? arguments, Map<String, String>? env}) {
+  Cat copy({List<String>? arguments, ShellEnv? env}) {
     return Cat(name: name, arguments: arguments ?? this.arguments, env: env?? this.env);
   }
 }

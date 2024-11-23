@@ -1,10 +1,11 @@
 import 'dart:io';
 
 import '../command.dart';
+import '../shell_env.dart';
 
 class Ls extends Command
 {
- Ls({super.name = "ls", required super.arguments, super.env});
+ Ls({super.name = "ls", required super.arguments, required super.env});
 
  @override
  Future<ProcessResult> execute(
@@ -48,7 +49,7 @@ class Ls extends Command
   }
  }
  @override
-  Ls copy({List<String>? arguments, Map<String, String>? env}) {
+  Ls copy({List<String>? arguments, ShellEnv? env}) {
    return Ls(name: name, arguments: arguments ?? this.arguments, env: env?? this.env);
  }
 }

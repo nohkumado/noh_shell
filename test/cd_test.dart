@@ -1,4 +1,5 @@
 import 'package:noh_shell/commands/cd.dart';
+import 'package:noh_shell/shell_env.dart';
 import 'package:test/test.dart';
 import 'dart:io';
 
@@ -6,7 +7,7 @@ void main() {
   group('Cd command tests', () {
     test('Change to existing directory', () async {
       final tempDir = Directory.systemTemp.createTempSync('cd_test_');
-      final cd = Cd(arguments: [tempDir.path]);
+      final cd = Cd(arguments: [tempDir.path], env: ShellEnv());
       final result = await cd.execute();
 
       expect(result.exitCode, equals(0));
@@ -16,7 +17,7 @@ void main() {
     });
 
     test('Change to home directory when no arguments', () async {
-      final cd = Cd(arguments: []);
+      final cd = Cd(arguments: [], env: ShellEnv());
       final result = await cd.execute();
 
       String expectedHome = Platform.environment['HOME']
@@ -28,7 +29,7 @@ void main() {
     });
 
     test('Attempt to change to non-existent directory', () async {
-      final cd = Cd(arguments: ['/non/existent/path']);
+      final cd = Cd(arguments: ['/non/existent/path'], env: ShellEnv());
       final result = await cd.execute();
 
       expect(result.exitCode, equals(1));

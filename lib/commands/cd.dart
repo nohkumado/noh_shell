@@ -1,8 +1,9 @@
 import 'dart:io';
 import '../command.dart';
+import '../shell_env.dart';
 
 class Cd extends Command {
-  Cd({super.name = "cd", required super.arguments, super.env});
+  Cd({super.name = "cd", required super.arguments, required super.env});
 
   @override
   Future<ProcessResult> execute({
@@ -37,7 +38,7 @@ class Cd extends Command {
     }
   }
   @override
-  Cd copy({List<String>? arguments, Map<String, String>? env}) {
+  Cd copy({List<String>? arguments, ShellEnv? env}) {
     return Cd(name: name, arguments: arguments ?? this.arguments, env: env?? this.env);
   }
 }

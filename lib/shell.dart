@@ -1,27 +1,34 @@
 import 'dart:io';
 
+import 'package:noh_shell/shell_env.dart';
+
 import 'command.dart';
 import 'commands/cat.dart';
 import 'commands/cd.dart';
 import 'commands/export.dart';
 import 'commands/ls.dart';
 import 'commands/pwd.dart';
+import 'prompt.dart';
 
 class Shell {
 
-  final Map<String, Command> commands = {
-    'ls': Ls(arguments: []),
-    'cat': Cat(arguments: []),
-    'pwd': Pwd(arguments: []),
-    'cd': Cd(arguments: []),
-    'export': Export(arguments: []),
-  };
+  ShellEnv env =ShellEnv();
+  final Map<String, Command> commands = {};
+  Shell()
+  {
+    commands["ls"] = Ls(arguments: [], env: env);
+    commands["cat"] = Cat(arguments: [], env: env);
+    commands["pwd"] = Pwd(arguments: [], env: env);
+    commands["cd"] = Cd(arguments: [], env: env);
+    commands["export"] = Export(arguments: [], env: env);
+  }
   // Environment variables stored in a Map
-  Map<String, String> env = {
-    'HOME': Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'] ?? '.',
-    'PWD': Directory.current.path,
-    'USER': Platform.environment['USER'] ?? Platform.environment['USERNAME'] ?? 'user',
-  };
+  //Map<String, String> env = {
+  //  'HOME': Platform.environment['HOME'] ?? Platform.environment['USERPROFILE'] ?? '.',
+  //  'PWD': Directory.current.path,
+  //  'USER': Platform.environment['USER'] ?? Platform.environment['USERNAME'] ?? 'user',
+  //  'PS1': '\\u\\h:\\w\$ '
+  //};
 
   // Method to set environment variables
   void setEnv(String key, String value) {
@@ -34,9 +41,10 @@ class Shell {
   }
   Future<void> run() async {
     bool running = true;
+    Prompt prompt = Prompt(env: env);
     while (running)
     {
-      stdout.write('> ');
+      stdout.write('${prompt} ');
       String? input = stdin.readLineSync();
 
       if (input == null || input.toLowerCase() == 'quit') {

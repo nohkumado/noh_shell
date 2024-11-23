@@ -1,4 +1,5 @@
 import 'package:noh_shell/commands/cat.dart';
+import 'package:noh_shell/shell_env.dart';
 import 'package:test/test.dart';
 import 'dart:io';
 
@@ -18,21 +19,21 @@ void main() {
     });
 
     test('Cat existing file', () async {
-      final cat = Cat(arguments: [testFile.path]);
+      final cat = Cat(arguments: [testFile.path], env: ShellEnv());
       final result = await cat.execute();
       expect(result.exitCode, equals(0));
       expect(result.stdout, equals('Hello, World!'));
     });
 
     test('Cat non-existent file', () async {
-      final cat = Cat(arguments: ['/non/existent/file.txt']);
+      final cat = Cat(arguments: ['/non/existent/file.txt'], env: ShellEnv());
       final result = await cat.execute();
       expect(result.exitCode, equals(1));
       expect(result.stderr, contains('File does not exist'));
     });
 
     test('Cat without arguments', () async {
-      final cat = Cat(arguments: []);
+      final cat = Cat(arguments: [], env: ShellEnv());
       final result = await cat.execute();
       expect(result.exitCode, equals(1));
       expect(result.stderr, contains('Usage: cat <filename>'));
@@ -51,7 +52,7 @@ void main() {
         return;
       }
 
-      final cat = Cat(arguments: [unreadableFile.path]);
+      final cat = Cat(arguments: [unreadableFile.path], env: ShellEnv());
       final result = await cat.execute();
       expect(result.exitCode, equals(1));
       expect(result.stderr, contains('Error reading file'));

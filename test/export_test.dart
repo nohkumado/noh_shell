@@ -1,18 +1,17 @@
 import 'package:noh_shell/commands/export.dart';
+import 'package:noh_shell/shell_env.dart';
 import 'package:test/test.dart';
 import 'dart:io';
 
 void main() {
   group('Export command tests', () {
     late Export exportCommand;
-    late Map<String, String> testEnv;
+    ShellEnv testEnv = ShellEnv();
 
     setUp(() {
-      testEnv = {
-        'HOME': '/home/testuser',
-        'PWD': '/current/directory',
-        'USER': 'testuser',
-      };
+      testEnv['HOME'] = '/home/testuser';
+      testEnv['PWD'] =  '/current/directory';
+      testEnv['USER'] =  'testuser';
     });
 
     test('Export new variable', () async {
