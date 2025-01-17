@@ -25,7 +25,7 @@ void main() {
       chmodCommand = Chmod(arguments: ['755', testFile.path], env: env);
       final result = await chmodCommand.execute();
 
-      expect(result.exitCode, equals(0));
+      expect(result.exitCode, equals(0), reason: "Expected exit code 0, got ${result.exitCode}");
       final fileMode = testFile.statSync().mode;
       expect(fileMode & 0x1FF, equals(0x1ED)); // 0o755 in octal
     });
@@ -37,7 +37,7 @@ void main() {
       chmodCommand = Chmod(arguments: ['-R', '700', testDir.path], env: env);
       final result = await chmodCommand.execute();
 
-      expect(result.exitCode, equals(0));
+      expect(result.exitCode, equals(0), reason: "Expected recursion exit code 0, got ${result.exitCode}");
       final dirMode = testDir.statSync().mode;
       final fileMode = testFile.statSync().mode;
       expect(dirMode & 0x1FF, equals(0x1C0)); // 0o700 in octal
@@ -52,7 +52,7 @@ void main() {
 
       expect(result.exitCode, equals(0));
       final fileMode = testFile.statSync().mode;
-      expect(fileMode & 0x1FF, equals(0x1FF)); // 0o777 in octal
+      expect(fileMode & 0x1FF, equals(0x1FF), reason: "Expected 0o777 in octal, got ${fileMode}"); // 0o777 in octal
     });
 
     test('Fail to change permissions of non-existent file', () async {
@@ -73,7 +73,7 @@ void main() {
       final result = await chmodCommand.execute();
 
       expect(result.exitCode, equals(0));
-      expect(file1.statSync().mode & 0x1FF, equals(0x1A4)); // 0o644 in octal
+      expect(file1.statSync().mode & 0x1FF, equals(0x1A4), reason:  "Expected multi 0o644 in octal, got ${file1.statSync().mode}"); // 0o644 in octal
       expect(file2.statSync().mode & 0x1FF, equals(0x1A4)); // 0o644 in octal
     });
   });

@@ -1,4 +1,4 @@
 # missing stuff
 
+- man: Display manual pages for commands
 - redirect per > >> into a file 
-- pipe | one command output into the next command 

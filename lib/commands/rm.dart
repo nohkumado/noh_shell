@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import '../command.dart';
 import '../shell_env.dart';
@@ -8,12 +9,12 @@ class Rm extends Command {
   @override
   Future<ProcessResult> execute({
     String? input,
-    IOSink? output,
-    IOSink? error,
+    StreamSink<String>? output,
+    StreamSink<String>? error,
     bool debug = false,
   }) async {
     if (arguments.isEmpty) {
-      error?.writeln('Usage: rm [-r] <file/directory>');
+      errorln('Usage: rm [-r] <file/directory>');
       return ProcessResult(0, 1, '', 'Usage: rm [-r] <file/directory>');
     }
 
@@ -35,14 +36,14 @@ class Rm extends Command {
             : File(path);
 
         if (entity is Directory && !recursive) {
-          error?.writeln("rm: cannot remove '$path': Is a directory");
+          errorln("rm: cannot remove '$path': Is a directory");
           return ProcessResult(0, 1, '', "rm: cannot remove '$path': Is a directory");
         }
 
         await entity.delete(recursive: recursive);
-        output?.writeln('Removed: $path');
+        writeln('Removed: $path');
       } catch (e) {
-        error?.writeln('Failed to remove $path: $e');
+        errorln('Failed to remove $path: $e');
         return ProcessResult(0, 1, '', 'Failed to remove $path: $e');
       }
     }

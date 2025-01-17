@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:noh_shell/shell_env.dart';
 
@@ -9,12 +10,12 @@ class Pwd extends Command {
   @override
   Future<ProcessResult> execute({
     String? input,
-    IOSink? output,
-    IOSink? error,
+    StreamSink<String>? output,
+    StreamSink<String>? error,
     bool debug = false,
   }) async {
     String currentDirectory = Directory.current.path;
-    output?.write('$currentDirectory\n');
+    write('$currentDirectory\n');
     return ProcessResult(0, 0, currentDirectory, '');
   }
   @override

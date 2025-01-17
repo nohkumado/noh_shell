@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import '../command.dart';
 import '../shell_env.dart';
@@ -8,12 +9,12 @@ class Cp extends Command {
   @override
   Future<ProcessResult> execute({
     String? input,
-    IOSink? output,
-    IOSink? error,
+    StreamSink<String>? output,
+    StreamSink<String>? error,
     bool debug = false,
   }) async {
     if (arguments.length < 2) {
-      error?.writeln('Usage: cp [-r] <source> ... <destination>');
+      errorln('Usage: cp [-r] <source> ... <destination>');
       return ProcessResult(0, 1, '', 'Usage: cp [-r] <source> ... <destination>');
     }
 
@@ -38,7 +39,7 @@ class Cp extends Command {
             : File(source);
 
         if (sourceEntity is Directory && !recursive) {
-          error?.writeln("cp: omitting directory '$source'");
+          errorln("cp: omitting directory '$source'");
           return ProcessResult(0, 1, '', 'cp: omitting directory "$source"');
         }
 
@@ -52,9 +53,9 @@ class Cp extends Command {
           await _copyDirectory(sourceEntity, actualDestination, recursive);
         }
 
-        output?.writeln('Copied: $source to $actualDestination');
+        writeln('Copied: $source to $actualDestination');
       } catch (e) {
-        error?.writeln('Failed to copy $source: $e');
+        errorln('Failed to copy $source: $e');
         return ProcessResult(0, 1, '', 'Failed to copy $source: $e');
       }
     }

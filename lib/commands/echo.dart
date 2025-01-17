@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:noh_shell/shell_env.dart';
 import '../command.dart';
@@ -8,8 +9,8 @@ class Echo extends Command {
   @override
   Future<ProcessResult> execute({
     String? input,
-    IOSink? output,
-    IOSink? error,
+    StreamSink<String>? output,
+    StreamSink<String>? error,
     bool debug = false,
   }) async {
     bool interpretEscapes = false;
@@ -37,7 +38,7 @@ class Echo extends Command {
       result += '\n';
     }
 
-    output?.write(result);
+    write(result);
     return ProcessResult(0, 0, result, '');
   }
 

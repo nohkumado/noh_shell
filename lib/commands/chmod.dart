@@ -1,4 +1,7 @@
+import 'dart:async';
 import 'dart:io';
+import 'package:noh_shell/utils/binary_number.dart';
+
 import '../command.dart';
 import '../shell_env.dart';
 
@@ -8,12 +11,12 @@ class Chmod extends Command {
   @override
   Future<ProcessResult> execute({
     String? input,
-    IOSink? output,
-    IOSink? error,
+    StreamSink<String>? output,
+    StreamSink<String>? error,
     bool debug = false,
   }) async {
     if (arguments.length < 2) {
-      error?.writeln('Usage: chmod [-R] <mode> <file/directory>');
+      errorln('Usage: chmod [-R] <mode> <file/directory>');
       return ProcessResult(0, 1, '', 'Usage: chmod [-R] <mode> <file/directory>');
     }
 
@@ -32,16 +35,16 @@ class Chmod extends Command {
     }
 
     if (mode.isEmpty || targets.isEmpty) {
-      error?.writeln('Invalid arguments');
+      errorln('Invalid arguments');
       return ProcessResult(0, 1, '', 'Invalid arguments');
     }
 
     for (String target in targets) {
       try {
         await _changeMode(target, mode, recursive);
-        output?.writeln('Changed mode of $target to $mode');
+        writeln('Changed mode of $target to $mode');
       } catch (e) {
-        error?.writeln('Failed to change mode of $target: $e');
+        errorln('Failed to change mode of $target: $e');
         return ProcessResult(0, 1, '', 'Failed to change mode of $target: $e');
       }
     }
@@ -83,27 +86,89 @@ class Chmod extends Command {
   }
 
   int _parseMode(String mode) {
+    print("parsing mode: $mode");
+
+    // Check if the mode is numeric
     if (RegExp(r'^\d+$').hasMatch(mode)) {
-      return int.parse(mode, radix: 8);
-    } else {
-      // Implement symbolic mode parsing here
-      // This is a simplified version and doesn't cover all cases
+      var splitted = mode.split('');
+      bool ok = true;
+      for(int i = 0; i < splitted.length; i++){
+        ok &= (int.parse(splitted[i]) < 8) ;
+      }
+      return int.parse(mode, radix: 10);
+    }
+    else
+    {
+      //sst rwx rwx rwx extended 9 bits otherwise
+      BinaryNumber bn = BinaryNumber(length: 12);
+      // Parse symbolic mode
       int result = 0;
-      if (mode.contains('r')) result |= 4;
-      if (mode.contains('w')) result |= 2;
-      if (mode.contains('x')) result |= 1;
-      return result * 73; // Apply to user, group, and others
+      final RegExp chmodRegex = RegExp(r'([ugoa]*)([=+-])([rwxXst-]*)');
+      Iterable<RegExpMatch> matches = chmodRegex.allMatches(mode);
+      for (var match in matches) {
+        String categories = match.group(1) ?? 'a';  // Default to 'all' if not specified
+        String operator = match.group(2)?? '+';
+        String permTypes = match.group(3)!;
+
+        int pos = 0;
+        if(categories.contains('u')  ||categories.contains('a'))
+        {
+          pos = 3;
+          setPerm(operator, pos, bn, permTypes);
+        }
+        if(categories.contains('g')  ||categories.contains('a'))
+        {
+          pos = 6;
+          setPerm(operator, pos, bn, permTypes);
+        }
+        if(categories.contains('o')  ||categories.contains('a'))
+        {
+          pos = 9;
+          setPerm(operator, pos, bn, permTypes);
+        }
+      }
+
+    }
+
+    //print("returning symbolic mode: ${toOctal()}");
+    //return result;
+    return 755;
+  }
+
+  void setPerm(String operator, int pos, BinaryNumber bn, String permTypes) {
+    if(operator == '=')
+    {
+      for(int n = pos; n< pos+3; n++) bn[n] = 1;
+      operator = '+';
+    }
+    if(operator == '+')
+    {
+      if (permTypes.contains('r')) bn[pos]= 1;
+      if (permTypes.contains('w')) bn[pos+1] = 1;
+      if (permTypes.contains('x')) bn[pos+2] = 1;
+      if (permTypes.contains('s') && (pos == 3 || pos == 6)) bn[pos - 3] = 1;
+      if (permTypes.contains('t') && pos == 9) bn[0] = 1;
+    }
+    else if(operator == '-')
+    {
+      if (permTypes.contains('r')) bn[pos]= 0;
+      if (permTypes.contains('w')) bn[pos+1] = 0;
+      if (permTypes.contains('x')) bn[pos+2] = 0;
+      // Handle special permissions
+      if (permTypes.contains('s') && (pos == 3 || pos == 6)) bn[pos - 3] = 1;
+      if (permTypes.contains('t') && pos == 9) bn[0] = 1;
     }
   }
+
 
   @override
   Chmod copy({List<String>? arguments, ShellEnv? env}) {
     return Chmod(arguments: arguments ?? this.arguments, env: env ?? this.env);
   }
-Future<void> changeFilePermissions(String filePath, String mode) async {
-  var result = await Process.run('chmod', [mode, filePath]);
-  if (result.exitCode != 0) {
-    throw Exception('Failed to change file permissions: ${result.stderr}');
+  Future<void> changeFilePermissions(String filePath, String mode) async {
+    var result = await Process.run('chmod', [mode, filePath]);
+    if (result.exitCode != 0) {
+      throw Exception('Failed to change file permissions: ${result.stderr}');
+    }
   }
-}
 }

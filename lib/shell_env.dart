@@ -5,7 +5,7 @@ class ShellEnv {
 
   @override
   String toString() {
-    StringBuffer result = new StringBuffer();
+    StringBuffer result = StringBuffer();
     _env.forEach((key, value) {
       String line = '$key=$value\n';
       result.write(line);
@@ -51,4 +51,9 @@ class ShellEnv {
   String get home => get('HOME', defaultValue: '/');
   String get hostname => get('HOSTNAME', defaultValue: 'localhost');
   String get pwd => get('PWD', defaultValue: Directory.current.path);
+
+  toMap()
+  {
+    return _env;
+  }
 }

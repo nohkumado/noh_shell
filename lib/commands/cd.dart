@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import '../command.dart';
 import '../shell_env.dart';
@@ -8,8 +9,8 @@ class Cd extends Command {
   @override
   Future<ProcessResult> execute({
     String? input,
-    IOSink? output,
-    IOSink? error,
+    StreamSink<String>? output,
+    StreamSink<String>? error,
     bool debug = false,
   }) async {
     // If no arguments provided, return to home directory
@@ -22,18 +23,18 @@ class Cd extends Command {
       Directory targetDirectory = Directory(targetPath).absolute;
 
       if (!await targetDirectory.exists()) {
-        error?.writeln('cd: ${targetDirectory.path}: No such file or directory');
+        errorln('cd: ${targetDirectory.path}: No such file or directory');
         return ProcessResult(0, 1, '', 'No such file or directory');
       }
 
       // Change the current working directory
       Directory.current = targetDirectory;
 
-      output?.write('${targetDirectory.path}\n');
+      write('${targetDirectory.path}\n');
       env['PWD'] = targetDirectory.path;
       return ProcessResult(0, 0, targetDirectory.path, '');
     } catch (e) {
-      error?.writeln('cd: Error changing directory: $e');
+      errorln('cd: Error changing directory: $e');
       return ProcessResult(0, 1, '', 'Error changing directory');
     }
   }

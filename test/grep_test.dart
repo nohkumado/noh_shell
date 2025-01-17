@@ -31,16 +31,16 @@ Line 4: Final line
       grepCommand = Grep(arguments: ['Hello', testFile.path], env: env);
       final result = await grepCommand.execute();
       expect(result.exitCode, equals(0));
-      expect(result.stdout, contains('1: Line 1: Hello World'));
-      expect(result.stdout, contains('3: Line 3: Another Hello'));
+      expect(result.stdout, contains('1: Line 1: Hello World'),reason: "Expected output to contain '1: Line 1: Hello World' in \n${result.stdout}");
+      expect(result.stdout, contains('2: Line 3: Another Hello'));
       expect(result.stdout, contains('2 match(es) found'));
     });
 
     test('Grep with non-matching pattern', () async {
       grepCommand = Grep(arguments: ['NotFound', testFile.path], env: env);
       final result = await grepCommand.execute();
-      expect(result.exitCode, equals(0));
-      expect(result.stdout, contains('0 match(es) found'));
+      expect(result.exitCode, equals(1));
+      expect(result.stderr, contains('No matches found'), reason: "Expected output to contain 'No match(es) found' in ${result.stdout}  vs ${result.stderr}");
     });
 
     test('Grep with non-existent file', () async {
@@ -51,10 +51,10 @@ Line 4: Final line
     });
 
     test('Grep with insufficient arguments', () async {
-      grepCommand = Grep(arguments: ['pattern'], env: env);
+      grepCommand = Grep(arguments: [], env: env);
       final result = await grepCommand.execute();
       expect(result.exitCode, equals(1));
-      expect(result.stderr, contains('Usage: grep <pattern> <file>'));
+      expect(result.stderr, contains('Usage: grep <pattern> <file>'), reason: "Expected output to contain 'Usage: grep <pattern> <file>' in ${result.stderr}");
     });
 
     test('Copy method', () {

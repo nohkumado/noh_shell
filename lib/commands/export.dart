@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import '../command.dart';
@@ -9,8 +10,8 @@ class Export extends Command {
   @override
   Future<ProcessResult> execute({
     String? input,
-    IOSink? output,
-    IOSink? error,
+    StreamSink<String>? output,
+    StreamSink<String>? error,
     bool debug = false,
   }) async {
     if(debug) print("entering export with env: $env");
@@ -19,7 +20,7 @@ class Export extends Command {
       if(debug) print("noargs rpinting out env");
       // If no arguments, print all environment variables
         String line = '$env\n';
-        output?.writeln(line);
+        writeln(line);
         resultOutput.write(line);
       if(debug) print("output set to $output");
       return ProcessResult(0, 0, resultOutput.toString(), '');
@@ -30,7 +31,7 @@ class Export extends Command {
     if(debug) print("export isolated $parts");
     if (parts.length != 2) {
       String line = 'Usage: export KEY=VALUE';
-      error?.writeln(line);
+      errorln(line);
       resultOutput.write(line);
       return ProcessResult(0, 1, resultOutput.toString(), 'Invalid syntax');
     }
@@ -39,7 +40,7 @@ class Export extends Command {
     String value = parts[1].trim();
 
     env[key] = value;
-    output?.writeln('Exported: $key=$value');
+    writeln('Exported: $key=$value');
     if(debug) print("export exported to env: $key=$value -> $env");
 
     return ProcessResult(0, 0, 'Exported: $key=$value', '');

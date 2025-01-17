@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:noh_shell/shell_env.dart';
 import '../command.dart';
@@ -8,12 +9,12 @@ class Touch extends Command {
   @override
   Future<ProcessResult> execute({
     String? input,
-    IOSink? output,
-    IOSink? error,
+    StreamSink<String>? output,
+    StreamSink<String>? error,
     bool debug = false,
   }) async {
     if (arguments.isEmpty) {
-      error?.writeln('Usage: touch <filename>');
+      errorln('Usage: touch <filename>');
       return ProcessResult(0, 1, '', 'Usage: touch <filename>');
     }
 
@@ -26,7 +27,7 @@ class Touch extends Command {
           await file.create();
         }
       } catch (e) {
-        error?.writeln('Error touching file $filename: $e');
+        errorln('Error touching file $filename: $e');
         return ProcessResult(0, 1, '', 'Error touching file $filename: $e');
       }
     }

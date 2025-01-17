@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import '../command.dart';
@@ -11,8 +12,8 @@ class Ls extends Command
  Future<ProcessResult> execute(
  {
  String? input,
- IOSink? output,
- IOSink? error,
+ StreamSink<String>? output,
+ StreamSink<String>? error,
    bool debug = false,
  }
      )
@@ -38,13 +39,13 @@ class Ls extends Command
     }
     if(debug) print("LS about to return : $result ");
 
-    output?.write(result.toString());
+    write(result.toString());
       return ProcessResult(0, 0, result.toString(), '');
   } else {
     //print('Directory does not exist: $directoryPath');
     String errorMessage = 'Directory does not exist: $directoryPath';
     if(debug) print("LS error: about to return : $directoryPath ");
-    error?.writeln(errorMessage);
+    errorln(errorMessage);
     return ProcessResult(0, 1, '', errorMessage);
   }
  }

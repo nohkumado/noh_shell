@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import '../command.dart';
 import '../shell_env.dart';
@@ -8,12 +9,12 @@ class Mv extends Command {
   @override
   Future<ProcessResult> execute({
     String? input,
-    IOSink? output,
-    IOSink? error,
+    StreamSink<String>? output,
+    StreamSink<String>? error,
     bool debug = false,
   }) async {
     if (arguments.length < 2) {
-      error?.writeln('Usage: mv [-i] <source> <destination>');
+      errorln('Usage: mv [-i] <source> <destination>');
       return ProcessResult(0, 1, '', 'Usage: mv [-i] <source> <destination>');
     }
 
@@ -42,7 +43,7 @@ class Mv extends Command {
             : destination;
 
         if (interactive && await FileSystemEntity.isFile(actualDestination)) {
-          output?.write("mv: overwrite '$actualDestination'? ");
+          write("mv: overwrite '$actualDestination'? ");
           String? response = stdin.readLineSync()?.toLowerCase();
           if (response != 'y' && response != 'yes') {
             continue;
@@ -50,9 +51,9 @@ class Mv extends Command {
         }
 
         await sourceEntity.rename(actualDestination);
-        output?.writeln('Moved: $source to $actualDestination');
+        writeln('Moved: $source to $actualDestination');
       } catch (e) {
-        error?.writeln('Failed to move $source: $e');
+        errorln('Failed to move $source: $e');
         return ProcessResult(0, 1, '', 'Failed to move $source: $e');
       }
     }
